@@ -1,6 +1,6 @@
 import supabase from './supabaseAdmin'
 
-async function logCron(level: string, message: string, meta?: any) {
+async function logCron(level: string, message: string, meta?: unknown) {
   await supabase.from('cron_logs').insert([
     {
       level,

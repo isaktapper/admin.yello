@@ -26,7 +26,13 @@ export default async function AdminLogsPage() {
             </tr>
           </thead>
           <tbody>
-            {logs?.map((log: any) => (
+            {logs?.map((log: {
+              id: string;
+              created_at: string;
+              level: string;
+              message: string;
+              meta?: unknown;
+            }) => (
               <tr key={log.id}>
                 <td className="px-2 py-1 border whitespace-nowrap">{new Date(log.created_at).toLocaleString()}</td>
                 <td className="px-2 py-1 border font-mono">{log.level}</td>
