@@ -18,36 +18,58 @@ export async function updateAnnouncementVisibility() {
 
   console.log('🔁 Kör updateAnnouncementVisibility:', now)
 
-  // Aktivera där scheduledStart har passerat och visibility = false
-  const { error: startError, data: activatedData } = await supabase
+  // Hämta ID:n på de som ska aktiveras
+  const { data: toActivate, error: selectActivateError } = await supabase
     .from('announcements')
-    .update({ visibility: true })
+    .select('id')
     .lte('scheduledStart', now)
     .eq('visibility', false)
-    .select()
 
-  if (startError) {
-    error = startError
-    console.error('Fel vid aktivering:', startError)
+  if (selectActivateError) {
+    error = selectActivateError
+    console.error('Fel vid select för aktivering:', selectActivateError)
   } else {
-    activatedCount = activatedData ? activatedData.length : 0
-    console.log(`✅ Aktiverade bars: ${activatedCount}`)
+    activatedCount = toActivate ? toActivate.length : 0
+    console.log(`🔎 Bars att aktivera: ${activatedCount}`)
+    if (activatedCount > 0) {
+      const { error: startError } = await supabase
+        .from('announcements')
+        .update({ visibility: true })
+        .in('id', toActivate.map(a => a.id))
+      if (startError) {
+        error = startError
+        console.error('Fel vid aktivering:', startError)
+      } else {
+        console.log(`✅ Aktiverade bars: ${activatedCount}`)
+      }
+    }
   }
 
-  // Inaktivera där scheduledEnd har passerat och visibility = true
-  const { error: endError, data: deactivatedData } = await supabase
+  // Hämta ID:n på de som ska inaktiveras
+  const { data: toDeactivate, error: selectDeactivateError } = await supabase
     .from('announcements')
-    .update({ visibility: false })
+    .select('id')
     .lte('scheduledEnd', now)
     .eq('visibility', true)
-    .select()
 
-  if (endError) {
-    error = endError
-    console.error('Fel vid inaktivering:', endError)
+  if (selectDeactivateError) {
+    error = selectDeactivateError
+    console.error('Fel vid select för inaktivering:', selectDeactivateError)
   } else {
-    deactivatedCount = deactivatedData ? deactivatedData.length : 0
-    console.log(`✅ Inaktiverade bars: ${deactivatedCount}`)
+    deactivatedCount = toDeactivate ? toDeactivate.length : 0
+    console.log(`🔎 Bars att inaktivera: ${deactivatedCount}`)
+    if (deactivatedCount > 0) {
+      const { error: endError } = await supabase
+        .from('announcements')
+        .update({ visibility: false })
+        .in('id', toDeactivate.map(a => a.id))
+      if (endError) {
+        error = endError
+        console.error('Fel vid inaktivering:', endError)
+      } else {
+        console.log(`✅ Inaktiverade bars: ${deactivatedCount}`)
+      }
+    }
   }
 
   // Logga resultatet
