@@ -13,7 +13,7 @@ export function startInternalCron() {
     }
     // Ping för att hålla Render vaken
     try {
-      const res = await fetch('https://admin.yello.bar/api/ping')
+      const res = await fetch('https://admin-yello.onrender.com/api/ping')
       console.log('🌐 Pingade /api/ping:', res.status)
     } catch (err) {
       console.error('❌ Fel vid ping:', err)
