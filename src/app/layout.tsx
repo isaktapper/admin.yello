@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { startInternalCron } from '@/lib/startInternalCron'
+
+// Starta cron-jobbet på serversidan (körs bara på servern)
+if (typeof window === 'undefined') {
+  startInternalCron()
+}
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
